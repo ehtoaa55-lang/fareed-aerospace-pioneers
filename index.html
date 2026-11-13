@@ -45,24 +45,33 @@
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 20px;
+            gap: 25px;
             margin-top: 30px;
         }
         .card {
             background-color: #1c2541;
             border: 2px solid #3a506b;
             border-radius: 12px;
-            padding: 20px;
-            width: 250px;
+            padding: 25px 20px;
+            width: 260px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .card img {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ffb703;
+            margin-bottom: 15px;
         }
         .card h3 {
             color: #ffb703;
-            margin-bottom: 5px;
+            margin: 10px 0 5px 0;
         }
         .card p {
             color: #adb5bd;
             font-size: 0.95rem;
+            margin: 0;
         }
         .btn {
             display: inline-block;
@@ -92,7 +101,7 @@
 
     <header>
         <!-- شعار الفريق -->
-        <img src="logo.png" alt="FAP Logo" class="logo-img">
+        <img src="IMG_20261113_172615_703.jpg" alt="FAP Logo" class="logo-img">
         
         <h1>Fareed Aerospace Pioneers (FAP)</h1>
         <p class="subtitle">رواد كابتن فريد للفضاء والطيران - العراق 2026</p>
@@ -101,18 +110,28 @@
     <div class="container">
         <h2>قيادة وإدارة الفريق</h2>
         <div class="leadership-section">
+            
+            <!-- بطاقة كابتن فريد -->
             <div class="card">
+                <img src="IMG_20261113_172610_891.jpg" alt="كابتن فريد">
                 <h3>كابتن فريد</h3>
-                <p>مؤسس الفريق</p>
+                <p>رئيس مؤسسة كابتن فريد للفضاء والطيران</p>
             </div>
+
+            <!-- بطاقة المهندس عدي -->
             <div class="card">
-                <h3>د. عدي</h3>
-                <p>المشرف المسؤول</p>
+                <img src="IMG_20261113_172606_261.jpg" alt="المهندس عدي">
+                <h3>المهندس عدي</h3>
+                <p>مسؤول الفريق</p>
             </div>
+
+            <!-- بطاقة حيدر حسن -->
             <div class="card">
+                <img src="IMG_20261113_172606_472.jpg" alt="حيدر حسن">
                 <h3>حيدر حسن</h3>
                 <p>قائد الفريق</p>
             </div>
+
         </div>
 
         <br>
