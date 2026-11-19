@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة القائد — FAP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-dark: #060d1a;
+      --bg-card: #0d1b33;
+      --gold: #f5d061;
+      --gold-dark: #d4af37;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: rgba(212, 175, 55, 0.25);
+      --success: #10b981;
+      --danger: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Cairo', sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #102547 0%, var(--bg-dark) 65%);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      padding: 24px 16px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+
+    header h1 {
+      color: var(--gold);
+      font-size: 1.7rem;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .login-box {
+      max-width: 380px;
+      margin: 16px auto;
+      text-align: center;
+    }
+
+    input {
+      width: 100%;
+      background: #081224;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      color: var(--text-main);
+      padding: 11px 14px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+    }
+
+    .btn-gold {
+      width: 100%;
+      background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+      color: #060d1a;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .btn-refresh {
+      width: auto;
+      margin-bottom: 16px;
+    }
+
+    .app-item {
+      background: #081224;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+    }
+
+    .status-pill {
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .status-Pending { background: rgba(245, 208, 97, 0.2); color: var(--gold); }
+    .status-Approved { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+    .status-Rejected { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+
+    .app-details {
+      font-size: 0.92rem;
+      color: #cbd5e1;
+      line-height: 1.75;
+    }
+
+    .app-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .btn-approve, .btn-reject {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-approve { background: var(--success); color: #fff; }
+    .btn-reject { background: var(--danger); color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>لوحة قائد فريق FAP</h1>
+      <p style="color: var(--text-muted);">إدارة طلبات الانضمام وإرسال بطاقات العضوية PDF</p>
+    </header>
+
+    <div class="card">
+      <div id="loginBox" class="login-box">
+        <h3 style="color: var(--gold); margin-bottom: 12px;">دخول القائد</h3>
+        <input type="password" id="passInput" placeholder="أدخل رمز المرور" />
+        <button class="btn-gold" onclick="login()">دخول</button>
+        <p id="errMsg" style="color: #fca5a5; margin-top: 10px; font-size: 0.9rem;"></p>
+      </div>
+
+      <div id="panelBox" class="hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+          <h3 style="color: var(--gold); margin-bottom: 16px;">الطلبات الواردة</h3>
+          <button class="btn-gold btn-refresh" onclick="loadApps()">تحديث القائمة ↻</button>
+        </div>
+        <div id="appsList">جاري التحميل...</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxsEVqHQszSyVUqnO5VcRsmyC2bGYL2RYP0vWiH2aCSeQ-B0-LYDS1RTB1MoVQFag3t/exec';
+    const ADMIN_PASS = 'FAP2026';
+
+    function login() {
+      if (document.getElementById('passInput').value === ADMIN_PASS) {
+        document.getElementById('loginBox').classList.add('hidden');
+        document.getElementById('panelBox').classList.remove('hidden');
+        loadApps();
+      } else {
+        document.getElementById('errMsg').textContent = 'رمز المرور غير صحيح';
+      }
+    }
+
+    async function loadApps() {
+      const list = document.getElementById('appsList');
+      list.innerHTML = 'جاري جلب الطلبات...';
+
+      try {
+        const res = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'get_applications' })
+        });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error || 'فشل الجلب');
+
+        if (!data.applications || data.applications.length === 0) {
+          list.innerHTML = '<p style="color: var(--text-muted);">لا توجد طلبات حالياً.</p>';
+          return;
+        }
+
+        list.innerHTML = data.applications.reverse().map(app => `
+          <div class="app-item">
+            <div class="app-header">
+              <div>
+                <strong style="color: var(--gold);">${app.fullName}</strong>
+                <span style="color: var(--text-muted); font-size: 0.85rem;"> (${app.memberId})</span>
+              </div>
+              <span class="status-pill status-${app.status}">${app.status}</span>
+            </div>
+            <div class="app-details">
+              <div><strong>العمر:</strong> ${app.age} | <strong>المحافظة:</strong> ${app.governorate}</div>
+              <div><strong>الجامعة/الجهة:</strong> ${app.university}</div>
+              <div><strong>البريد:</strong> ${app.email}</div>
+              <div><strong>المهارات:</strong> ${app.skills}</div>
+              <div><strong>المسابقات:</strong> ${app.competitions || 'لا يوجد'}</div>
+              ${app.photoUrl ? `<div><a href="${app.photoUrl}" target="_blank" style="color: var(--gold);">عرض الصورة الشخصية ↗</a></div>` : ''}
+            </div>
+            <div class="app-actions">
+              <button class="btn-approve" onclick="decide(${app.rowIndex}, 'approve_member', this)">موافقة وإرسال البطاقة ✓</button>
+              <button class="btn-reject" onclick="decide(${app.rowIndex}, 'reject_member', this)">رفض ✕</button>
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        list.innerHTML = `<p style="color: #fca5a5;">خطأ: ${err.message}</p>`;
+      }
+    }
+
+    async function decide(rowIndex, action, btn) {
+      const old = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'جاري التنفيذ...';
+      try {
+        const res = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action, rowIndex })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert(action === 'approve_member' ? 'تمت الموافقة وإرسال بطاقة PDF بنجاح!' : 'تم رفض الطلب.');
+          loadApps();
+        } else {
+          throw new Error(data.error || 'فشل التحديث');
+        }
+      } catch (err) {
+        alert('خطأ: ' + err.message);
+        btn.disabled = false;
+        btn.textContent = old;
+      }
+    }
+  </script>
+</body>
+</html>
