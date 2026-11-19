@@ -178,9 +178,16 @@
       font-weight: 700;
     }
 
+    .preview-avatar-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
     .preview-avatar {
       width: 95px;
-      height: 95px;
+      height: 112px;
       border-radius: 14px;
       border: 2px solid var(--gold);
       object-fit: cover;
@@ -198,6 +205,147 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+    }
+
+    .edit-photo-btn {
+      display: none;
+      background: rgba(212, 175, 55, 0.16);
+      color: var(--gold);
+      border: 1px solid var(--gold-dark);
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* نافذة تعديل مقاس وموضع الصورة للمتقدم */
+    #userCropModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 10, 22, 0.88);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .crop-dialog {
+      background: #0d1b33;
+      border: 2px solid var(--gold-dark);
+      border-radius: 16px;
+      padding: 20px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 16px 38px rgba(0, 0, 0, 0.6);
+    }
+
+    .crop-dialog h3 {
+      color: var(--gold);
+      margin-bottom: 6px;
+      font-size: 1.15rem;
+    }
+
+    .crop-dialog p {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-bottom: 14px;
+    }
+
+    .crop-stage {
+      width: 210px;
+      height: 250px;
+      margin: 0 auto 14px;
+      border-radius: 16px;
+      border: 3px solid var(--gold);
+      overflow: hidden;
+      position: relative;
+      background: #081224;
+      touch-action: none;
+      cursor: grab;
+    }
+
+    .crop-stage:active {
+      cursor: grabbing;
+    }
+
+    .crop-stage img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      max-width: none;
+      transform-origin: center center;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .crop-zoom-box {
+      margin-bottom: 12px;
+      text-align: right;
+    }
+
+    .crop-zoom-box label {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 0.88rem;
+    }
+
+    .crop-zoom-box input[type="range"] {
+      width: 100%;
+      padding: 0;
+      accent-color: var(--gold);
+      cursor: pointer;
+    }
+
+    .crop-arrows {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .crop-arrows button {
+      background: #142a50;
+      color: var(--text-main);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      padding: 6px 11px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .crop-arrows button.reset-btn {
+      color: var(--gold);
+    }
+
+    .crop-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .crop-actions button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 800;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+
+    .btn-crop-save {
+      background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+      color: #060d1a;
+    }
+
+    .btn-crop-cancel {
+      background: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+      border: 1px solid var(--danger) !important;
     }
 
     .submit-btn {
@@ -356,7 +504,10 @@
                 <div class="preview-line"><span>الجهة / Affiliation:</span> <strong id="prevUni">---</strong></div>
                 <div class="preview-line"><span>المحافظة / Governorate:</span> <strong id="prevGov">---</strong></div>
               </div>
-              <div class="preview-avatar" id="prevAvatarBox">الصورة الشخصية</div>
+              <div class="preview-avatar-wrap">
+                <div class="preview-avatar" id="prevAvatarBox">الصورة الشخصية</div>
+                <button type="button" id="reopenCropBtn" class="edit-photo-btn" onclick="openUserCropper()">تعديل مقاس الصورة ✂️</button>
+              </div>
             </div>
           </div>
         </div>
@@ -367,8 +518,50 @@
     </div>
   </div>
 
+  <!-- نافذة تعديل مقاس وموضع الصورة للمتقدم -->
+  <div id="userCropModal">
+    <div class="crop-dialog">
+      <h3>ضبط مقاس الصورة الشخصية</h3>
+      <p>اسحب الصورة أو استخدم الأزرار لتوسيط وجهك داخل إطار البطاقة</p>
+
+      <div id="userCropStage" class="crop-stage">
+        <img id="userCropImg" src="" alt="Crop Preview" />
+      </div>
+
+      <div class="crop-zoom-box">
+        <label for="userCropZoom">التكبير / التصغير (Zoom):</label>
+        <input id="userCropZoom" type="range" min="0.5" max="3" step="0.05" value="1" />
+      </div>
+
+      <div class="crop-arrows">
+        <button type="button" onclick="nudgeUserCrop(0, -10)">↑ أعلى</button>
+        <button type="button" onclick="nudgeUserCrop(0, 10)">↓ أسفل</button>
+        <button type="button" onclick="nudgeUserCrop(-10, 0)">← يسار</button>
+        <button type="button" onclick="nudgeUserCrop(10, 0)">→ يمين</button>
+        <button type="button" class="reset-btn" onclick="resetUserCrop()">إعادة ضبط</button>
+      </div>
+
+      <div class="crop-actions">
+        <button type="button" class="btn-crop-save" onclick="confirmUserCrop()">اعتماد المقاس ✓</button>
+        <button type="button" class="btn-crop-cancel" onclick="closeUserCropper()">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxsEVqHQszSyVUqnO5VcRsmyC2bGYL2RYP0vWiH2aCSeQ-B0-LYDS1RTB1MoVQFag3t/exec';
+
+    let rawOriginalPhotoDataUrl = '';
+    let croppedPhotoBase64 = '';
+    let userCrop = {
+      scale: 1,
+      baseScale: 1,
+      x: 0,
+      y: 0,
+      dragging: false,
+      startX: 0,
+      startY: 0
+    };
 
     function getSelectedUniversity() {
       const sel = document.getElementById('universitySelect').value;
@@ -403,16 +596,136 @@
       document.getElementById('prevUni').textContent = uniVal || '---';
     }
 
+    function applyUserCropTransform() {
+      const img = document.getElementById('userCropImg');
+      if (!img) return;
+      const totalScale = userCrop.baseScale * userCrop.scale;
+      img.style.transform = `translate(calc(-50% + ${userCrop.x}px), calc(-50% + ${userCrop.y}px)) scale(${totalScale})`;
+    }
+
+    function resetUserCrop() {
+      userCrop.scale = 1;
+      userCrop.x = 0;
+      userCrop.y = 0;
+      const zoomEl = document.getElementById('userCropZoom');
+      if (zoomEl) zoomEl.value = '1';
+      applyUserCropTransform();
+    }
+
+    function nudgeUserCrop(dx, dy) {
+      userCrop.x += dx;
+      userCrop.y += dy;
+      applyUserCropTransform();
+    }
+
+    function openUserCropper() {
+      if (!rawOriginalPhotoDataUrl) return;
+      const modal = document.getElementById('userCropModal');
+      const img = document.getElementById('userCropImg');
+
+      img.onload = function () {
+        const stageW = 210;
+        const stageH = 250;
+        userCrop.baseScale = Math.max(stageW / img.naturalWidth, stageH / img.naturalHeight);
+        resetUserCrop();
+      };
+
+      img.src = rawOriginalPhotoDataUrl;
+      modal.style.display = 'flex';
+    }
+
+    function closeUserCropper() {
+      document.getElementById('userCropModal').style.display = 'none';
+    }
+
+    function confirmUserCrop() {
+      const img = document.getElementById('userCropImg');
+      if (!img || !img.naturalWidth) {
+        closeUserCropper();
+        return;
+      }
+
+      // تصدير الصورة المقصوصة بنفس نسبة أبعاد إطار البطاقة (210x250) بدقة عالية (420x500)
+      const stageW = 210;
+      const stageH = 250;
+      const outW = 420;
+      const outH = 500;
+      const ratio = outW / stageW;
+
+      const canvas = document.createElement('canvas');
+      canvas.width = outW;
+      canvas.height = outH;
+      const ctx = canvas.getContext('2d');
+
+      ctx.fillStyle = '#081224';
+      ctx.fillRect(0, 0, outW, outH);
+
+      const totalScale = userCrop.baseScale * userCrop.scale * ratio;
+      const drawW = img.naturalWidth * totalScale;
+      const drawH = img.naturalHeight * totalScale;
+      const centerX = outW / 2 + userCrop.x * ratio;
+      const centerY = outH / 2 + userCrop.y * ratio;
+
+      ctx.drawImage(img, centerX - drawW / 2, centerY - drawH / 2, drawW, drawH);
+
+      croppedPhotoBase64 = canvas.toDataURL('image/jpeg', 0.92);
+      const box = document.getElementById('prevAvatarBox');
+      box.innerHTML = `<img src="${croppedPhotoBase64}" alt="Preview" />`;
+      document.getElementById('reopenCropBtn').style.display = 'inline-block';
+      closeUserCropper();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const stage = document.getElementById('userCropStage');
+      const zoomEl = document.getElementById('userCropZoom');
+
+      if (zoomEl) {
+        zoomEl.addEventListener('input', (e) => {
+          userCrop.scale = parseFloat(e.target.value) || 1;
+          applyUserCropTransform();
+        });
+      }
+
+      if (stage) {
+        stage.addEventListener('pointerdown', (e) => {
+          userCrop.dragging = true;
+          userCrop.startX = e.clientX - userCrop.x;
+          userCrop.startY = e.clientY - userCrop.y;
+          stage.setPointerCapture(e.pointerId);
+        });
+
+        stage.addEventListener('pointermove', (e) => {
+          if (!userCrop.dragging) return;
+          userCrop.x = e.clientX - userCrop.startX;
+          userCrop.y = e.clientY - userCrop.startY;
+          applyUserCropTransform();
+        });
+
+        stage.addEventListener('pointerup', () => {
+          userCrop.dragging = false;
+        });
+      }
+    });
+
     function previewPhoto(input) {
       const box = document.getElementById('prevAvatarBox');
+      const editBtn = document.getElementById('reopenCropBtn');
+
       if (input.files && input.files[0]) {
         const reader = new FileReader();
         reader.onload = function (e) {
+          rawOriginalPhotoDataUrl = e.target.result;
+          croppedPhotoBase64 = e.target.result;
           box.innerHTML = `<img src="${e.target.result}" alt="Preview" />`;
+          editBtn.style.display = 'inline-block';
+          openUserCropper();
         };
         reader.readAsDataURL(input.files[0]);
       } else {
+        rawOriginalPhotoDataUrl = '';
+        croppedPhotoBase64 = '';
         box.innerHTML = 'الصورة الشخصية';
+        editBtn.style.display = 'none';
       }
     }
 
@@ -440,7 +753,7 @@
       btn.textContent = 'جاري رفع البيانات والصورة... يرجى الانتظار';
 
       try {
-        const photoBase64 = await fileToBase64(photoFile);
+        const photoBase64 = croppedPhotoBase64 || await fileToBase64(photoFile);
         const payload = {
           action: 'submit_application',
           fullName: document.getElementById('fullName').value.trim(),
@@ -463,6 +776,9 @@
           alertBox.className = 'alert success';
           alertBox.textContent = 'تم إرسال طلبك بنجاح! رقم طلبك: ' + result.memberId + '. ستصلك بطاقة العضوية على بريدك الإلكتروني فور موافقة القائد.';
           document.getElementById('fapForm').reset();
+          rawOriginalPhotoDataUrl = '';
+          croppedPhotoBase64 = '';
+          document.getElementById('reopenCropBtn').style.display = 'none';
           document.getElementById('customUniGroup').style.display = 'none';
           document.getElementById('prevAvatarBox').innerHTML = 'الصورة الشخصية';
           updatePreview();
