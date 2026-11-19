@@ -1,284 +1,534 @@
-<!-- تأكد من تضمين مكتبتي html2canvas و jsPDF (أو html2pdf) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&display=swap" rel="stylesheet">
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة قائد فريق FAP</title>
 
-<style>
-  #fapPdfExportWrapper {
-    position: fixed;
-    left: -10000px;
-    top: 0;
-    width: 860px;
-    height: 480px;
-    background: #ffffff;
-    overflow: hidden;
-    z-index: -1;
-  }
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-  .fap-card {
-    width: 860px;
-    height: 480px;
-    background: #ffffff;
-    border: 3px solid #d4af37;
-    border-radius: 20px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
-    direction: rtl;
-    box-sizing: border-box;
-  }
+  <style>
+    :root {
+      --fap-navy: #0b2c5d;
+      --fap-blue: #154c9e;
+      --fap-gold: #d4af37;
+      --fap-gold-light: #f5dc86;
+      --fap-white: #ffffff;
+      --fap-bg: #eef3fa;
+      --fap-text: #111827;
+    }
 
-  .fap-card-header {
-    background: linear-gradient(90deg, #0b2c5d 0%, #154c9e 100%);
-    color: #ffffff;
-    padding: 14px 28px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 4px solid #d4af37;
-  }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  .fap-brand-group {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
+    body {
+      font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+      background: var(--fap-bg);
+      color: var(--fap-text);
+      padding: 24px;
+    }
 
-  .fap-team-logo {
-    width: 54px;
-    height: 54px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #d4af37;
-    background: #0b2c5d;
-  }
+    .dashboard-container {
+      max-width: 960px;
+      margin: 0 auto;
+    }
 
-  .fap-short-name {
-    font-size: 30px;
-    font-weight: 800;
-    letter-spacing: 2px;
-    color: #ffffff;
-    line-height: 1.1;
-  }
+    .dashboard-header {
+      background: linear-gradient(90deg, var(--fap-navy) 0%, var(--fap-blue) 100%);
+      color: var(--fap-white);
+      padding: 20px 24px;
+      border-radius: 16px;
+      border-bottom: 4px solid var(--fap-gold);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
 
-  .fap-gold-tag {
-    background: rgba(212, 175, 55, 0.2);
-    color: #f9e29c;
-    border: 1px solid #d4af37;
-    padding: 6px 16px;
-    border-radius: 999px;
-    font-size: 15px;
-    font-weight: 700;
-  }
+    .dashboard-header h1 {
+      font-size: 22px;
+      font-weight: 800;
+    }
 
-  .fap-card-body {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 26px 36px;
-    gap: 32px;
-    background: radial-gradient(circle at top left, rgba(212, 175, 55, 0.08), transparent 45%), #ffffff;
-  }
+    .dashboard-header p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
 
-  .fap-member-photo-box {
-    width: 210px;
-    height: 250px;
-    border-radius: 16px;
-    border: 3px solid #154c9e;
-    outline: 3px solid #d4af37;
-    outline-offset: 3px;
-    overflow: hidden;
-    background: #eef3fa;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+    .requests-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
 
-  .fap-member-photo-box img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
+    .request-card {
+      background: var(--fap-white);
+      border-radius: 14px;
+      padding: 18px 20px;
+      border: 1px solid #d5e0f0;
+      box-shadow: 0 6px 18px rgba(11, 44, 93, 0.06);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
 
-  .fap-member-details {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
+    .request-info h2 {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--fap-navy);
+      margin-bottom: 6px;
+    }
 
-  .fap-field-row {
-    background: #f6f9fe;
-    border-right: 5px solid #154c9e;
-    border-left: 2px solid rgba(212, 175, 55, 0.6);
-    border-radius: 10px;
-    padding: 11px 18px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 20px;
-  }
+    .request-meta {
+      font-size: 14px;
+      color: #374151;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
 
-  .fap-field-label {
-    color: #0b2c5d;
-    font-weight: 800;
-    min-width: 110px;
-  }
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #e0ecff;
+      color: var(--fap-blue);
+      margin-right: 8px;
+    }
 
-  .fap-field-value {
-    color: #111827;
-    font-weight: 700;
-  }
+    .status-badge.approved {
+      background: #dcfce7;
+      color: #166534;
+    }
 
-  .fap-card-footer {
-    height: 12px;
-    background: linear-gradient(90deg, #d4af37 0%, #f3d678 50%, #d4af37 100%);
-  }
-</style>
+    .status-badge.rejected {
+      background: #fee2e2;
+      color: #991b1b;
+    }
 
-<div id="fapPdfExportWrapper">
-  <div id="fapMembershipCard" class="fap-card">
-    <div class="fap-card-header">
-      <div class="fap-brand-group">
-        <img id="fapLogoImg" class="fap-team-logo" src="" alt="FAP Logo" />
-        <span class="fap-short-name">FAP</span>
+    .request-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      opacity: 0.95;
+    }
+
+    .btn-approve {
+      background: linear-gradient(90deg, var(--fap-navy), var(--fap-blue));
+      color: var(--fap-white);
+      border-bottom: 2px solid var(--fap-gold);
+    }
+
+    .btn-reject {
+      background: #dc2626;
+      color: var(--fap-white);
+    }
+
+    .btn-refresh {
+      background: var(--fap-white);
+      color: var(--fap-navy);
+      border: 2px solid var(--fap-gold);
+    }
+
+    /* حاوية تصدير البطاقة مخفية خارج الشاشة */
+    #fapPdfExportWrapper {
+      position: fixed;
+      left: -10000px;
+      top: 0;
+      width: 860px;
+      height: 480px;
+      background: #ffffff;
+      overflow: hidden;
+      z-index: -1;
+    }
+
+    .fap-card {
+      width: 860px;
+      height: 480px;
+      background: var(--fap-white);
+      border: 3px solid var(--fap-gold);
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      direction: rtl;
+    }
+
+    .fap-card-header {
+      background: linear-gradient(90deg, var(--fap-navy) 0%, var(--fap-blue) 100%);
+      color: var(--fap-white);
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 4px solid var(--fap-gold);
+    }
+
+    .fap-brand-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .fap-team-logo {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--fap-gold);
+      background: var(--fap-navy);
+    }
+
+    .fap-short-name {
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: var(--fap-white);
+    }
+
+    .fap-gold-tag {
+      background: rgba(212, 175, 55, 0.2);
+      color: var(--fap-gold-light);
+      border: 1px solid var(--fap-gold);
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .fap-card-body {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 26px 36px;
+      gap: 32px;
+      background: radial-gradient(circle at top left, rgba(212, 175, 55, 0.08), transparent 45%), #ffffff;
+    }
+
+    .fap-member-photo-box {
+      width: 210px;
+      height: 250px;
+      border-radius: 16px;
+      border: 3px solid var(--fap-blue);
+      outline: 3px solid var(--fap-gold);
+      outline-offset: 3px;
+      overflow: hidden;
+      background: #eef3fa;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .fap-member-photo-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .fap-member-details {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .fap-field-row {
+      background: #f6f9fe;
+      border-right: 5px solid var(--fap-blue);
+      border-left: 2px solid rgba(212, 175, 55, 0.6);
+      border-radius: 10px;
+      padding: 11px 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 20px;
+    }
+
+    .fap-field-label {
+      color: var(--fap-navy);
+      font-weight: 800;
+      min-width: 110px;
+    }
+
+    .fap-field-value {
+      color: var(--fap-text);
+      font-weight: 700;
+    }
+
+    .fap-card-footer {
+      height: 12px;
+      background: linear-gradient(90deg, var(--fap-gold) 0%, var(--fap-gold-light) 50%, var(--fap-gold) 100%);
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <header class="dashboard-header">
+      <div>
+        <h1>لوحة قائد فريق FAP</h1>
+        <p>إدارة طلبات الانضمام وتوليد بطاقات العضوية PDF</p>
       </div>
-      <span class="fap-gold-tag">بطاقة عضوية</span>
-    </div>
+      <button id="refreshBtn" class="btn btn-refresh" type="button">تحديث القائمة</button>
+    </header>
 
-    <div class="fap-card-body">
-      <div class="fap-member-photo-box">
-        <img id="fapMemberImg" src="" alt="Member Photo" />
-      </div>
-
-      <div class="fap-member-details">
-        <div class="fap-field-row">
-          <span class="fap-field-label">العضو:</span>
-          <span id="fapMemberName" class="fap-field-value">-</span>
-        </div>
-        <div class="fap-field-row">
-          <span class="fap-field-label">الجامعة:</span>
-          <span id="fapMemberUni" class="fap-field-value">-</span>
-        </div>
-        <div class="fap-field-row">
-          <span class="fap-field-label">العمر:</span>
-          <span id="fapMemberAge" class="fap-field-value">-</span>
-        </div>
-        <div class="fap-field-row">
-          <span class="fap-field-label">المحافظة:</span>
-          <span id="fapMemberGov" class="fap-field-value">-</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="fap-card-footer"></div>
+    <main id="requestsContainer" class="requests-list"></main>
   </div>
-</div>
 
-<script>
-  function loadImageSafely(imgEl, src) {
-    return new Promise((resolve) => {
-      if (!imgEl || !src) {
-        if (imgEl) {
-          imgEl.removeAttribute('crossOrigin');
-          imgEl.src = '';
+  <!-- قالب بطاقة العضوية المخصص لتصدير PDF -->
+  <div id="fapPdfExportWrapper">
+    <div id="fapMembershipCard" class="fap-card">
+      <div class="fap-card-header">
+        <div class="fap-brand-group">
+          <img id="fapLogoImg" class="fap-team-logo" src="" alt="FAP Logo" />
+          <span class="fap-short-name">FAP</span>
+        </div>
+        <span class="fap-gold-tag">بطاقة عضوية</span>
+      </div>
+
+      <div class="fap-card-body">
+        <div class="fap-member-photo-box">
+          <img id="fapMemberImg" src="" alt="Member Photo" />
+        </div>
+
+        <div class="fap-member-details">
+          <div class="fap-field-row">
+            <span class="fap-field-label">العضو:</span>
+            <span id="fapMemberName" class="fap-field-value">-</span>
+          </div>
+          <div class="fap-field-row">
+            <span class="fap-field-label">الجامعة:</span>
+            <span id="fapMemberUni" class="fap-field-value">-</span>
+          </div>
+          <div class="fap-field-row">
+            <span class="fap-field-label">العمر:</span>
+            <span id="fapMemberAge" class="fap-field-value">-</span>
+          </div>
+          <div class="fap-field-row">
+            <span class="fap-field-label">المحافظة:</span>
+            <span id="fapMemberGov" class="fap-field-value">-</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="fap-card-footer"></div>
+    </div>
+  </div>
+
+  <script>
+    // ضع هنا رابط شعار الفريق FAP المباشر
+    const FAP_LOGO_URL = '';
+
+    // استبدل هذه البيانات التجريبية بجلب البيانات الحقيقي من مصدرك (مثل Google Apps Script أو قاعدة البيانات)
+    let memberRequests = [
+      {
+        id: 'FAP-2026-4004',
+        name: 'Adem hassan',
+        universityShort: 'إعدادية',
+        age: '17',
+        governorate: 'بغداد',
+        photoUrl: '',
+        status: 'Pending'
+      }
+    ];
+
+    function loadImageSafely(imgEl, src) {
+      return new Promise((resolve) => {
+        if (!imgEl || !src) {
+          if (imgEl) {
+            imgEl.removeAttribute('crossOrigin');
+            imgEl.src = '';
+          }
+          return resolve(false);
         }
-        return resolve(false);
-      }
 
-      const isDataOrBlob = src.startsWith('data:') || src.startsWith('blob:');
-      if (!isDataOrBlob) {
-        imgEl.crossOrigin = 'anonymous';
-      } else {
-        imgEl.removeAttribute('crossOrigin');
-      }
-
-      const cleanupAndResolve = (ok) => {
-        imgEl.onload = null;
-        imgEl.onerror = null;
-        resolve(ok);
-      };
-
-      imgEl.onload = () => cleanupAndResolve(true);
-      imgEl.onerror = () => {
-        // إعادة المحاولة بدون crossOrigin إذا كان رابط خارجي يرفض CORS مع html2canvas
-        if (!isDataOrBlob && imgEl.crossOrigin === 'anonymous') {
-          imgEl.removeAttribute('crossOrigin');
-          imgEl.onload = () => cleanupAndResolve(true);
-          imgEl.onerror = () => cleanupAndResolve(false);
-          imgEl.src = src;
+        const isDataOrBlob = src.startsWith('data:') || src.startsWith('blob:');
+        if (!isDataOrBlob) {
+          imgEl.crossOrigin = 'anonymous';
         } else {
-          cleanupAndResolve(false);
+          imgEl.removeAttribute('crossOrigin');
         }
-      };
 
-      imgEl.src = src;
+        const finish = (ok) => {
+          imgEl.onload = null;
+          imgEl.onerror = null;
+          resolve(ok);
+        };
 
-      if (imgEl.complete && imgEl.naturalWidth > 0) {
-        cleanupAndResolve(true);
+        imgEl.onload = () => finish(true);
+        imgEl.onerror = () => {
+          if (!isDataOrBlob && imgEl.crossOrigin === 'anonymous') {
+            imgEl.removeAttribute('crossOrigin');
+            imgEl.onload = () => finish(true);
+            imgEl.onerror = () => finish(false);
+            imgEl.src = src;
+          } else {
+            finish(false);
+          }
+        };
+
+        imgEl.src = src;
+
+        if (imgEl.complete && imgEl.naturalWidth > 0) {
+          finish(true);
+        }
+      });
+    }
+
+    async function generateFapMembershipPdf(member, autoDownload = true) {
+      if (!window.html2canvas || !window.jspdf || !window.jspdf.jsPDF) {
+        throw new Error('لم يتم تحميل مكتبتي html2canvas أو jsPDF.');
       }
-    });
-  }
 
-  async function generateFapMembershipPdf(memberData, autoDownload = true) {
-    if (!window.html2canvas || !window.jspdf || !window.jspdf.jsPDF) {
-      throw new Error('تأكد من تحميل مكتبتي html2canvas و jsPDF بشكل صحيح.');
+      document.getElementById('fapMemberName').textContent = (member.name || '-').trim();
+      document.getElementById('fapMemberUni').textContent = (member.universityShort || '-').trim();
+      document.getElementById('fapMemberAge').textContent = (member.age || '-').toString().trim();
+      document.getElementById('fapMemberGov').textContent = (member.governorate || '-').trim();
+
+      const logoEl = document.getElementById('fapLogoImg');
+      const photoEl = document.getElementById('fapMemberImg');
+
+      await Promise.all([
+        loadImageSafely(logoEl, member.logoUrl || FAP_LOGO_URL),
+        loadImageSafely(photoEl, member.photoUrl || '')
+      ]);
+
+      if (document.fonts && document.fonts.ready) {
+        await document.fonts.ready;
+      }
+
+      const cardEl = document.getElementById('fapMembershipCard');
+      const canvas = await html2canvas(cardEl, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        width: 860,
+        height: 480
+      });
+
+      const imgData = canvas.toDataURL('image/png', 1.0);
+      const { jsPDF } = window.jspdf;
+
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'px',
+        format: [860, 480],
+        hotfixes: ['px_scaling']
+      });
+
+      pdf.addImage(imgData, 'PNG', 0, 0, 860, 480);
+
+      const safeName = (member.name || 'Member').trim().replace(/[^\w\u0600-\u06FF-]+/g, '_');
+      const fileName = `FAP_Membership_Card_${safeName}.pdf`;
+
+      if (autoDownload) {
+        pdf.save(fileName);
+      }
+
+      return {
+        fileName,
+        blob: pdf.output('blob')
+      };
     }
 
-    document.getElementById('fapMemberName').textContent = (memberData.name || '-').trim();
-    document.getElementById('fapMemberUni').textContent = (memberData.universityShort || '-').trim();
-    document.getElementById('fapMemberAge').textContent = (memberData.age || '-').toString().trim();
-    document.getElementById('fapMemberGov').textContent = (memberData.governorate || '-').trim();
+    function renderRequests() {
+      const container = document.getElementById('requestsContainer');
+      container.innerHTML = '';
 
-    const logoEl = document.getElementById('fapLogoImg');
-    const photoEl = document.getElementById('fapMemberImg');
+      if (!memberRequests.length) {
+        container.innerHTML = '<div class="request-card">لا توجد طلبات حالياً.</div>';
+        return;
+      }
 
-    await Promise.all([
-      loadImageSafely(logoEl, memberData.logoUrl || ''),
-      loadImageSafely(photoEl, memberData.photoUrl || '')
-    ]);
+      memberRequests.forEach((req, index) => {
+        const card = document.createElement('div');
+        card.className = 'request-card';
 
-    if (document.fonts && document.fonts.ready) {
-      await document.fonts.ready;
+        const statusClass =
+          req.status === 'Approved' ? 'approved' : req.status === 'Rejected' ? 'rejected' : '';
+
+        card.innerHTML = `
+          <div class="request-info">
+            <h2>
+              ${req.name} (${req.id})
+              <span class="status-badge ${statusClass}">${req.status || 'Pending'}</span>
+            </h2>
+            <div class="request-meta">
+              <span>العمر: ${req.age || '-'}</span>
+              <span>المحافظة: ${req.governorate || '-'}</span>
+              <span>الجامعة: ${req.universityShort || '-'}</span>
+            </div>
+          </div>
+          <div class="request-actions">
+            <button class="btn btn-approve" type="button" data-index="${index}">موافقة وإرسال البطاقة</button>
+            <button class="btn btn-reject" type="button" data-index="${index}">رفض</button>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      container.querySelectorAll('.btn-approve').forEach((btn) => {
+        btn.addEventListener('click', async (e) => {
+          const idx = Number(e.currentTarget.dataset.index);
+          const item = memberRequests[idx];
+          if (!item) return;
+
+          item.status = 'Approved';
+          renderRequests();
+
+          try {
+            await generateFapMembershipPdf(item, true);
+          } catch (err) {
+            console.error(err);
+            alert('حدث خطأ أثناء توليد البطاقة: ' + err.message);
+          }
+        });
+      });
+
+      container.querySelectorAll('.btn-reject').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          const idx = Number(e.currentTarget.dataset.index);
+          if (!memberRequests[idx]) return;
+          memberRequests[idx].status = 'Rejected';
+          renderRequests();
+        });
+      });
     }
 
-    const cardEl = document.getElementById('fapMembershipCard');
-    const canvas = await html2canvas(cardEl, {
-      scale: 2,
-      useCORS: true,
-      allowTaint: true,
-      backgroundColor: '#ffffff',
-      width: 860,
-      height: 480
+    document.getElementById('refreshBtn').addEventListener('click', () => {
+      renderRequests();
     });
 
-    const imgData = canvas.toDataURL('image/png', 1.0);
-    const { jsPDF } = window.jspdf;
-
-    // صفحة PDF بنفس أبعاد البطاقة تماماً (860x480 نقطة) لمنع التصغير أو الفراغ الزائد
-    const pdf = new jsPDF({
-      orientation: 'landscape',
-      unit: 'px',
-      format: [860, 480],
-      hotfixes: ['px_scaling']
-    });
-
-    pdf.addImage(imgData, 'PNG', 0, 0, 860, 480);
-
-    const safeName = (memberData.name || 'Member').trim().replace(/[^\w\u0600-\u06FF-]+/g, '_');
-    const fileName = `FAP_Membership_Card_${safeName}.pdf`;
-
-    if (autoDownload) {
-      pdf.save(fileName);
-    }
-
-    return {
-      fileName,
-      blob: pdf.output('blob')
-    };
-  }
-</script>
+    renderRequests();
+  </script>
+</body>
+</html>
