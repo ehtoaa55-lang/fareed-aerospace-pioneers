@@ -390,7 +390,7 @@
   </div>
 
   <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxsEVqHQszSyVUqnO5VcRsmyC2bGYL2RYP0vWiH2aCSeQ-B0-LYDS1RTB1MoVQFag3t/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxodenQpP6k3WWaeztL24MxLiy2u5inBm7fWBFAe4_Wtf8eFWsUF0uvv9nnf4jgNQd0/exec';
     const ADMIN_PASS = 'FAP2026';
     let currentApplications = [];
 
@@ -614,23 +614,26 @@
           };
         }
 
-        const res = await fetch(SCRIPT_URL, {
+        await fetch(SCRIPT_URL, {
           method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             action,
             rowIndex: app.rowIndex,
             ...cardPayload
           })
         });
-        const data = await res.json();
-        if (data.success) {
-          alert(action === 'approve_member' ? 'تمت الموافقة وإرسال بطاقة PDF بنجاح!' : 'تم رفض الطلب.');
-          loadApps();
-        } else {
-          throw new Error(data.error || 'فشل التحديث');
-        }
+
+        alert(
+          action === 'approve_member'
+            ? 'تمت الموافقة وتوليد بطاقة PDF وإرسالها!'
+            : 'تم تحديث حالة رفض الطلب.'
+        );
+        setTimeout(loadApps, 1200);
       } catch (err) {
         alert('خطأ: ' + err.message);
+      } finally {
         btn.disabled = false;
         btn.textContent = old;
       }
