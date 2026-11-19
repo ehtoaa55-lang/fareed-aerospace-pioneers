@@ -58,7 +58,7 @@
 
     .dashboard-header p {
       font-size: 14px;
-      opacity: 0.9;
+      opacity: 0.92;
     }
 
     .requests-list {
@@ -72,6 +72,7 @@
       border-radius: 14px;
       padding: 18px 20px;
       border: 1px solid #d5e0f0;
+      border-right: 5px solid var(--fap-blue);
       box-shadow: 0 6px 18px rgba(11, 44, 93, 0.06);
       display: flex;
       flex-wrap: wrap;
@@ -92,12 +93,12 @@
       color: #374151;
       display: flex;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 14px;
     }
 
     .status-badge {
       display: inline-block;
-      padding: 4px 12px;
+      padding: 3px 12px;
       border-radius: 999px;
       font-size: 12px;
       font-weight: 700;
@@ -133,9 +134,14 @@
       transition: transform 0.15s ease, opacity 0.15s ease;
     }
 
-    .btn:hover {
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn:hover:not(:disabled) {
       transform: translateY(-1px);
-      opacity: 0.95;
+      opacity: 0.96;
     }
 
     .btn-approve {
@@ -155,7 +161,7 @@
       border: 2px solid var(--fap-gold);
     }
 
-    /* حاوية تصدير البطاقة مخفية خارج الشاشة */
+    /* حاوية تصدير البطاقة */
     #fapPdfExportWrapper {
       position: fixed;
       left: -10000px;
@@ -182,7 +188,7 @@
     .fap-card-header {
       background: linear-gradient(90deg, var(--fap-navy) 0%, var(--fap-blue) 100%);
       color: var(--fap-white);
-      padding: 14px 28px;
+      padding: 12px 28px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -195,27 +201,26 @@
       gap: 14px;
     }
 
-    .fap-team-logo {
-      width: 54px;
-      height: 54px;
+    .fap-logo-svg {
+      width: 60px;
+      height: 60px;
+      flex-shrink: 0;
       border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid var(--fap-gold);
-      background: var(--fap-navy);
+      box-shadow: 0 0 0 2px var(--fap-gold);
     }
 
     .fap-short-name {
-      font-size: 30px;
+      font-size: 32px;
       font-weight: 800;
       letter-spacing: 2px;
       color: var(--fap-white);
     }
 
     .fap-gold-tag {
-      background: rgba(212, 175, 55, 0.2);
+      background: rgba(212, 175, 55, 0.22);
       color: var(--fap-gold-light);
       border: 1px solid var(--fap-gold);
-      padding: 6px 16px;
+      padding: 6px 18px;
       border-radius: 999px;
       font-size: 15px;
       font-weight: 700;
@@ -228,7 +233,7 @@
       justify-content: space-between;
       padding: 26px 36px;
       gap: 32px;
-      background: radial-gradient(circle at top left, rgba(212, 175, 55, 0.08), transparent 45%), #ffffff;
+      background: radial-gradient(circle at top left, rgba(212, 175, 55, 0.09), transparent 45%), #ffffff;
     }
 
     .fap-member-photo-box {
@@ -263,7 +268,7 @@
     .fap-field-row {
       background: #f6f9fe;
       border-right: 5px solid var(--fap-blue);
-      border-left: 2px solid rgba(212, 175, 55, 0.6);
+      border-left: 2px solid rgba(212, 175, 55, 0.65);
       border-radius: 10px;
       padding: 11px 18px;
       display: flex;
@@ -294,7 +299,7 @@
     <header class="dashboard-header">
       <div>
         <h1>لوحة قائد فريق FAP</h1>
-        <p>إدارة طلبات الانضمام وتوليد بطاقات العضوية PDF</p>
+        <p>إدارة طلبات الانضمام وتوليد وإرسال بطاقات العضوية PDF</p>
       </div>
       <button id="refreshBtn" class="btn btn-refresh" type="button">تحديث القائمة</button>
     </header>
@@ -302,12 +307,42 @@
     <main id="requestsContainer" class="requests-list"></main>
   </div>
 
-  <!-- قالب بطاقة العضوية المخصص لتصدير PDF -->
+  <!-- قالب بطاقة العضوية مع شعار FAP المثبت كجزء من البطاقة -->
   <div id="fapPdfExportWrapper">
     <div id="fapMembershipCard" class="fap-card">
       <div class="fap-card-header">
         <div class="fap-brand-group">
-          <img id="fapLogoImg" class="fap-team-logo" src="" alt="FAP Logo" />
+          <svg class="fap-logo-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-label="FAP Logo">
+            <defs>
+              <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#f5dc86" />
+                <stop offset="50%" stop-color="#d4af37" />
+                <stop offset="100%" stop-color="#9c7816" />
+              </linearGradient>
+              <radialGradient id="navyBg" cx="50%" cy="45%" r="55%">
+                <stop offset="0%" stop-color="#14325c" />
+                <stop offset="100%" stop-color="#071326" />
+              </radialGradient>
+            </defs>
+
+            <circle cx="100" cy="100" r="96" fill="url(#navyBg)" stroke="url(#goldGrad)" stroke-width="6" />
+            <circle cx="100" cy="100" r="84" fill="none" stroke="url(#goldGrad)" stroke-width="2.5" opacity="0.85" />
+            <circle cx="100" cy="100" r="68" fill="none" stroke="#6495ed" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.7" />
+
+            <ellipse cx="100" cy="102" rx="54" ry="18" transform="rotate(-24 100 102)" fill="none" stroke="#4ea8de" stroke-width="2.5" opacity="0.85" />
+            <circle cx="146" cy="80" r="4.5" fill="#f97316" />
+            <circle cx="56" cy="122" r="3.5" fill="#38bdf8" />
+
+            <polygon
+              points="100,34 113,76 154,68 122,96 146,132 106,112 94,134 82,112 46,128 74,95 44,68 86,76"
+              fill="url(#goldGrad)"
+            />
+            <circle cx="100" cy="30" r="3.5" fill="#f5dc86" />
+
+            <rect x="54" y="122" width="92" height="32" rx="8" fill="#0b2244" stroke="url(#goldGrad)" stroke-width="3" />
+            <text x="100" y="144" text-anchor="middle" fill="#ffffff" font-family="Cairo, Arial, sans-serif" font-size="20" font-weight="800" letter-spacing="2">FAP</text>
+          </svg>
+
           <span class="fap-short-name">FAP</span>
         </div>
         <span class="fap-gold-tag">بطاقة عضوية</span>
@@ -343,24 +378,42 @@
   </div>
 
   <script>
-    // ضع هنا رابط شعار الفريق FAP المباشر
-    const FAP_LOGO_URL = '';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbznrK9hWCxNUdIBZ8dNV-VurGFtGkfUwpw180SegUgFaud7iEtkj6Baviu1nz0__jmp/exec';
 
-    // استبدل هذه البيانات التجريبية بجلب البيانات الحقيقي من مصدرك (مثل Google Apps Script أو قاعدة البيانات)
-    let memberRequests = [
-      {
-        id: 'FAP-2026-4004',
-        name: 'Adem hassan',
-        universityShort: 'إعدادية',
-        age: '17',
-        governorate: 'بغداد',
-        photoUrl: '',
-        status: 'Pending'
+    function shortenUniversity(uni) {
+      if (!uni) return '-';
+      const clean = String(uni).trim();
+      const map = {
+        'جامعة بغداد': 'UOB',
+        'الجامعة التقنية الوسطى': 'MTU',
+        'الكلية التقنية الهندسية الكهربائية': 'ETEC',
+        'الجامعة المستنصرية': 'UOM'
+      };
+      return map[clean] || clean;
+    }
+
+    let memberRequests = [];
+
+    function normalizeImageUrl(url) {
+      if (!url || typeof url !== 'string') return '';
+      const trimmed = url.trim();
+
+      const fileMatch = trimmed.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+      if (fileMatch && fileMatch[1]) {
+        return `https://lh3.googleusercontent.com/d/${fileMatch[1]}`;
       }
-    ];
 
-    function loadImageSafely(imgEl, src) {
+      const idMatch = trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+      if (trimmed.includes('drive.google.com') && idMatch && idMatch[1]) {
+        return `https://lh3.googleusercontent.com/d/${idMatch[1]}`;
+      }
+
+      return trimmed;
+    }
+
+    function loadPhotoSafely(imgEl, rawUrl) {
       return new Promise((resolve) => {
+        const src = normalizeImageUrl(rawUrl);
         if (!imgEl || !src) {
           if (imgEl) {
             imgEl.removeAttribute('crossOrigin');
@@ -387,9 +440,13 @@
           if (!isDataOrBlob && imgEl.crossOrigin === 'anonymous') {
             imgEl.removeAttribute('crossOrigin');
             imgEl.onload = () => finish(true);
-            imgEl.onerror = () => finish(false);
+            imgEl.onerror = () => {
+              imgEl.src = '';
+              finish(false);
+            };
             imgEl.src = src;
           } else {
+            imgEl.src = '';
             finish(false);
           }
         };
@@ -408,31 +465,39 @@
       }
 
       document.getElementById('fapMemberName').textContent = (member.name || '-').trim();
-      document.getElementById('fapMemberUni').textContent = (member.universityShort || '-').trim();
+      document.getElementById('fapMemberUni').textContent = shortenUniversity(member.universityShort || member.university || '-');
       document.getElementById('fapMemberAge').textContent = (member.age || '-').toString().trim();
       document.getElementById('fapMemberGov').textContent = (member.governorate || '-').trim();
 
-      const logoEl = document.getElementById('fapLogoImg');
       const photoEl = document.getElementById('fapMemberImg');
-
-      await Promise.all([
-        loadImageSafely(logoEl, member.logoUrl || FAP_LOGO_URL),
-        loadImageSafely(photoEl, member.photoUrl || '')
-      ]);
+      await loadPhotoSafely(photoEl, member.photoUrl || '');
 
       if (document.fonts && document.fonts.ready) {
         await document.fonts.ready;
       }
 
       const cardEl = document.getElementById('fapMembershipCard');
-      const canvas = await html2canvas(cardEl, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff',
-        width: 860,
-        height: 480
-      });
+      let canvas;
+      try {
+        canvas = await html2canvas(cardEl, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          width: 860,
+          height: 480
+        });
+      } catch (canvasErr) {
+        photoEl.src = '';
+        canvas = await html2canvas(cardEl, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          width: 860,
+          height: 480
+        });
+      }
 
       const imgData = canvas.toDataURL('image/png', 1.0);
       const { jsPDF } = window.jspdf;
@@ -446,8 +511,8 @@
 
       pdf.addImage(imgData, 'PNG', 0, 0, 860, 480);
 
-      const safeName = (member.name || 'Member').trim().replace(/[^\w\u0600-\u06FF-]+/g, '_');
-      const fileName = `FAP_Membership_Card_${safeName}.pdf`;
+      const safeId = (member.id || 'Member').toString().trim().replace(/[^\w\u0600-\u06FF-]+/g, '_');
+      const fileName = `FAP_Membership_Card_${safeId}.pdf`;
 
       if (autoDownload) {
         pdf.save(fileName);
@@ -457,6 +522,79 @@
         fileName,
         blob: pdf.output('blob')
       };
+    }
+
+    async function sendCardViaAppsScript(member, fileName, blob) {
+      if (!APPS_SCRIPT_URL || !member.email) return;
+
+      const base64Pdf = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(String(reader.result).split(',')[1] || '');
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+
+      await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'approveAndSendCard',
+          memberId: member.id,
+          name: member.name,
+          email: member.email,
+          fileName,
+          pdfBase64: base64Pdf
+        })
+      });
+    }
+
+    async function approveAndGenerateCard(index, buttonEl) {
+      const item = memberRequests[index];
+      if (!item) return;
+
+      if (buttonEl) buttonEl.disabled = true;
+
+      try {
+        item.status = 'Approved';
+        renderRequests();
+
+        const { fileName, blob } = await generateFapMembershipPdf(item, true);
+        await sendCardViaAppsScript(item, fileName, blob);
+      } catch (err) {
+        console.error(err);
+        alert('حدث خطأ أثناء تجهيز البطاقة: ' + err.message);
+      } finally {
+        if (buttonEl) buttonEl.disabled = false;
+      }
+    }
+
+    async function loadRequestsFromSource() {
+      if (!APPS_SCRIPT_URL) {
+        renderRequests();
+        return;
+      }
+
+      try {
+        const res = await fetch(APPS_SCRIPT_URL);
+        const data = await res.json();
+        const rows = Array.isArray(data) ? data : (data.requests || data.data || []);
+
+        memberRequests = rows.map((row, idx) => ({
+          id: row.MemberID || row['Member ID'] || row.id || `FAP-2026-${idx + 1}`,
+          name: row.FullName || row['Full Name'] || row.name || '-',
+          universityShort: shortenUniversity(row.University || row.university || '-'),
+          age: row.Age || row.age || '-',
+          governorate: row.Governorate || row.governorate || '-',
+          email: row.Email || row.email || '',
+          photoUrl: row.PhotoURL || row['Photo URL'] || row.photoUrl || '',
+          status: row.Status || row.status || 'Pending'
+        }));
+      } catch (err) {
+        console.error('تعذر جلب الطلبات:', err);
+      }
+
+      renderRequests();
     }
 
     function renderRequests() {
@@ -482,9 +620,9 @@
               <span class="status-badge ${statusClass}">${req.status || 'Pending'}</span>
             </h2>
             <div class="request-meta">
-              <span>العمر: ${req.age || '-'}</span>
-              <span>المحافظة: ${req.governorate || '-'}</span>
-              <span>الجامعة: ${req.universityShort || '-'}</span>
+              <span>العمر: ${req.age}</span>
+              <span>المحافظة: ${req.governorate}</span>
+              <span>الجامعة: ${req.universityShort}</span>
             </div>
           </div>
           <div class="request-actions">
@@ -497,20 +635,9 @@
       });
 
       container.querySelectorAll('.btn-approve').forEach((btn) => {
-        btn.addEventListener('click', async (e) => {
+        btn.addEventListener('click', (e) => {
           const idx = Number(e.currentTarget.dataset.index);
-          const item = memberRequests[idx];
-          if (!item) return;
-
-          item.status = 'Approved';
-          renderRequests();
-
-          try {
-            await generateFapMembershipPdf(item, true);
-          } catch (err) {
-            console.error(err);
-            alert('حدث خطأ أثناء توليد البطاقة: ' + err.message);
-          }
+          approveAndGenerateCard(idx, e.currentTarget);
         });
       });
 
@@ -525,10 +652,10 @@
     }
 
     document.getElementById('refreshBtn').addEventListener('click', () => {
-      renderRequests();
+      loadRequestsFromSource();
     });
 
-    renderRequests();
+    loadRequestsFromSource();
   </script>
 </body>
 </html>
