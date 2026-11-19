@@ -161,6 +161,128 @@
     .btn-approve { background: var(--success); color: #fff; }
     .btn-reject { background: var(--danger); color: #fff; }
 
+    /* نافذة تعديل مقاس وموضع الصورة على مقاس البطاقة */
+    #fapPhotoCropModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 12, 26, 0.86);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .crop-dialog {
+      background: #0b244c;
+      border: 2px solid var(--gold-dark);
+      border-radius: 16px;
+      padding: 20px;
+      max-width: 420px;
+      width: 100%;
+      color: var(--text-main);
+      text-align: center;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5);
+    }
+
+    .crop-stage {
+      width: 210px;
+      height: 250px;
+      margin: 0 auto 14px;
+      border-radius: 16px;
+      border: 3px solid var(--fap-blue);
+      outline: 3px solid var(--gold-dark);
+      outline-offset: 3px;
+      overflow: hidden;
+      position: relative;
+      background: #eef3fa;
+      touch-action: none;
+      cursor: grab;
+    }
+
+    .crop-stage:active {
+      cursor: grabbing;
+    }
+
+    .crop-stage img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      max-width: none;
+      transform-origin: center center;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .crop-zoom-row {
+      margin-bottom: 12px;
+      text-align: right;
+    }
+
+    .crop-zoom-row label {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .crop-zoom-row input[type="range"] {
+      padding: 0;
+      margin-bottom: 0;
+      accent-color: var(--gold);
+      cursor: pointer;
+    }
+
+    .crop-nudge-btns {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .crop-nudge-btns button {
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: none;
+      background: var(--fap-blue);
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    .crop-nudge-btns button.crop-reset-btn {
+      border: 1px solid var(--gold-dark);
+      background: transparent;
+      color: var(--gold);
+    }
+
+    .crop-footer-btns {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .crop-footer-btns button {
+      flex: 1;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .crop-confirm-btn {
+      background: var(--success);
+      color: #fff;
+    }
+
+    .crop-cancel-btn {
+      background: var(--danger);
+      color: #fff;
+    }
+
     /* حاوية تصدير بطاقة العضوية PDF */
     #fapPdfExportWrapper {
       position: fixed;
@@ -249,6 +371,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      position: relative;
     }
 
     .fap-member-photo-box img {
@@ -315,6 +438,35 @@
           <button class="btn-gold btn-refresh" onclick="loadApps()">تحديث القائمة ↻</button>
         </div>
         <div id="appsList">جاري التحميل...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- نافذة تعديل مقاس وموضع الصورة على مقاس البطاقة -->
+  <div id="fapPhotoCropModal">
+    <div class="crop-dialog">
+      <h3 style="color: var(--gold); margin-bottom: 12px;">تعديل مقاس وموضع الصورة</h3>
+
+      <div id="cropStage" class="crop-stage">
+        <img id="cropPreviewImg" src="" alt="Crop Preview" />
+      </div>
+
+      <div class="crop-zoom-row">
+        <label for="cropZoomRange">التكبير / التصغير (Zoom):</label>
+        <input id="cropZoomRange" type="range" min="0.5" max="3" step="0.05" value="1" />
+      </div>
+
+      <div class="crop-nudge-btns">
+        <button type="button" onclick="nudgeCrop(0, -10)">↑ أعلى</button>
+        <button type="button" onclick="nudgeCrop(0, 10)">↓ أسفل</button>
+        <button type="button" onclick="nudgeCrop(-10, 0)">← يسار</button>
+        <button type="button" onclick="nudgeCrop(10, 0)">→ يمين</button>
+        <button type="button" class="crop-reset-btn" onclick="resetCrop()">إعادة ضبط</button>
+      </div>
+
+      <div class="crop-footer-btns">
+        <button id="confirmCropBtn" type="button" class="crop-confirm-btn">اعتماد المقاس ✓</button>
+        <button id="cancelCropBtn" type="button" class="crop-cancel-btn">إلغاء</button>
       </div>
     </div>
   </div>
@@ -393,6 +545,123 @@
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzMSq00x9lQCtjkJL--DVMUulZVtBo9iaiyxT4uNZnnBfrBf1JalaaFXDd42doZys-O/exec';
     const ADMIN_PASS = 'FAP2026';
     let currentApplications = [];
+
+    let cropState = {
+      scale: 1,
+      x: 0,
+      y: 0,
+      dragging: false,
+      startX: 0,
+      startY: 0,
+      resolve: null
+    };
+
+    function applyCropTransform() {
+      const img = document.getElementById('cropPreviewImg');
+      if (!img) return;
+      img.style.transform = `translate(calc(-50% + ${cropState.x}px), calc(-50% + ${cropState.y}px)) scale(${cropState.scale})`;
+    }
+
+    function resetCrop() {
+      cropState.scale = 1;
+      cropState.x = 0;
+      cropState.y = 0;
+      const range = document.getElementById('cropZoomRange');
+      if (range) range.value = '1';
+      applyCropTransform();
+    }
+
+    function nudgeCrop(dx, dy) {
+      cropState.x += dx;
+      cropState.y += dy;
+      applyCropTransform();
+    }
+
+    function openPhotoCropper(photoSrc) {
+      return new Promise((resolve) => {
+        cropState.resolve = resolve;
+        resetCrop();
+
+        const modal = document.getElementById('fapPhotoCropModal');
+        const img = document.getElementById('cropPreviewImg');
+        img.src = photoSrc || '';
+        modal.style.display = 'flex';
+      });
+    }
+
+    function applyCropToCardPhoto(cardImg, cropResult) {
+      if (!cardImg) return;
+      if (!cropResult) {
+        cardImg.style.position = '';
+        cardImg.style.top = '';
+        cardImg.style.left = '';
+        cardImg.style.width = '100%';
+        cardImg.style.height = '100%';
+        cardImg.style.maxWidth = '';
+        cardImg.style.objectFit = 'cover';
+        cardImg.style.transform = '';
+        return;
+      }
+
+      cardImg.style.position = 'absolute';
+      cardImg.style.top = '50%';
+      cardImg.style.left = '50%';
+      cardImg.style.maxWidth = 'none';
+      cardImg.style.width = '210px';
+      cardImg.style.height = '250px';
+      cardImg.style.objectFit = 'cover';
+      cardImg.style.transform = `translate(calc(-50% + ${cropResult.x}px), calc(-50% + ${cropResult.y}px)) scale(${cropResult.scale})`;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const stage = document.getElementById('cropStage');
+      const range = document.getElementById('cropZoomRange');
+      const confirmBtn = document.getElementById('confirmCropBtn');
+      const cancelBtn = document.getElementById('cancelCropBtn');
+      const modal = document.getElementById('fapPhotoCropModal');
+
+      if (range) {
+        range.addEventListener('input', (e) => {
+          cropState.scale = parseFloat(e.target.value) || 1;
+          applyCropTransform();
+        });
+      }
+
+      if (stage) {
+        stage.addEventListener('pointerdown', (e) => {
+          cropState.dragging = true;
+          cropState.startX = e.clientX - cropState.x;
+          cropState.startY = e.clientY - cropState.y;
+          stage.setPointerCapture(e.pointerId);
+        });
+
+        stage.addEventListener('pointermove', (e) => {
+          if (!cropState.dragging) return;
+          cropState.x = e.clientX - cropState.startX;
+          cropState.y = e.clientY - cropState.startY;
+          applyCropTransform();
+        });
+
+        stage.addEventListener('pointerup', () => {
+          cropState.dragging = false;
+        });
+      }
+
+      if (confirmBtn) {
+        confirmBtn.addEventListener('click', () => {
+          const result = { scale: cropState.scale, x: cropState.x, y: cropState.y };
+          modal.style.display = 'none';
+          if (cropState.resolve) cropState.resolve(result);
+        });
+      }
+
+      if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => {
+          modal.style.display = 'none';
+          if (cropState.resolve) cropState.resolve(null);
+        });
+      }
+    });
 
     function login() {
       if (document.getElementById('passInput').value === ADMIN_PASS) {
@@ -492,7 +761,13 @@
       document.getElementById('fapMemberGov').textContent = (app.governorate || '-').trim();
 
       const photoEl = document.getElementById('fapMemberImg');
-      await loadPhotoSafely(photoEl, app.photoUrl || '');
+      const photoLoaded = await loadPhotoSafely(photoEl, app.photoUrl || '');
+
+      let cropResult = null;
+      if (photoLoaded && photoEl.src) {
+        cropResult = await openPhotoCropper(photoEl.src);
+      }
+      applyCropToCardPhoto(photoEl, cropResult);
 
       if (document.fonts && document.fonts.ready) {
         await document.fonts.ready;
@@ -511,6 +786,7 @@
         });
       } catch (canvasErr) {
         photoEl.src = '';
+        applyCropToCardPhoto(photoEl, null);
         canvas = await html2canvas(cardEl, {
           scale: 2,
           useCORS: true,
