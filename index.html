@@ -35,7 +35,7 @@
     }
 
     .container {
-      max-width: 820px;
+      max-width: 860px;
       margin: 0 auto;
     }
 
@@ -43,7 +43,7 @@
       text-align: center;
       padding: 28px 16px;
       border-bottom: 1px solid var(--border);
-      margin-bottom: 28px;
+      margin-bottom: 24px;
     }
 
     .badge {
@@ -69,37 +69,22 @@
       font-size: 1rem;
     }
 
-    .tabs {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      margin-bottom: 24px;
-    }
-
-    .tab-btn {
-      background: var(--bg-card);
-      color: var(--text-muted);
-      border: 1px solid var(--border);
-      padding: 10px 22px;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: 0.25s;
-    }
-
-    .tab-btn.active {
-      background: linear-gradient(135deg, var(--gold-dark), var(--gold));
-      color: #060d1a;
-      border-color: var(--gold);
-    }
-
     .card {
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: 26px;
       box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      color: var(--gold);
+      font-size: 1.2rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .form-grid {
@@ -150,6 +135,71 @@
       min-height: 85px;
     }
 
+    /* معاينة نموذج البطاقة */
+    .preview-box {
+      background: linear-gradient(135deg, #060d1a 0%, #112342 100%);
+      border: 2px solid var(--gold-dark);
+      border-radius: 16px;
+      padding: 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .preview-info {
+      flex: 1;
+      min-width: 240px;
+    }
+
+    .preview-org {
+      color: var(--gold);
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .preview-card-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin: 4px 0 12px;
+      color: #fff;
+    }
+
+    .preview-line {
+      font-size: 0.92rem;
+      color: #e2e8f0;
+      margin-bottom: 6px;
+    }
+
+    .preview-line span {
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    .preview-avatar {
+      width: 95px;
+      height: 95px;
+      border-radius: 14px;
+      border: 2px solid var(--gold);
+      object-fit: cover;
+      background: #081224;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .preview-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
     .submit-btn {
       width: 100%;
       margin-top: 20px;
@@ -191,74 +241,6 @@
       color: #fca5a5;
       display: block;
     }
-
-    /* Leader Dashboard */
-    .hidden {
-      display: none !important;
-    }
-
-    .admin-login {
-      text-align: center;
-      max-width: 380px;
-      margin: 20px auto;
-    }
-
-    .app-item {
-      background: #081224;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .app-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      padding-bottom: 8px;
-    }
-
-    .status-pill {
-      padding: 3px 10px;
-      border-radius: 999px;
-      font-size: 0.8rem;
-      font-weight: 700;
-    }
-
-    .status-Pending { background: rgba(245, 208, 97, 0.2); color: var(--gold); }
-    .status-Approved { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
-    .status-Rejected { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
-
-    .app-details {
-      font-size: 0.9rem;
-      color: #cbd5e1;
-      line-height: 1.7;
-    }
-
-    .app-actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 6px;
-    }
-
-    .btn-approve, .btn-reject, .btn-refresh {
-      padding: 8px 16px;
-      border: none;
-      border-radius: 8px;
-      font-weight: 700;
-      cursor: pointer;
-      font-size: 0.9rem;
-    }
-
-    .btn-approve { background: var(--success); color: #fff; }
-    .btn-reject { background: var(--danger); color: #fff; }
-    .btn-refresh { background: var(--gold); color: #060d1a; margin-bottom: 16px; }
   </style>
 </head>
 <body>
@@ -267,40 +249,84 @@
     <header>
       <div class="badge">FAREED AEROSPACE PIONEERS (FAP)</div>
       <h1>فريق رواد كابتن فريد للفضاء والطيران</h1>
-      <p>البوابة الرسمية للتسجيل والانضمام إلى الفريق وإدارة العضويات</p>
+      <p>البوابة الرسمية للتسجيل والانضمام إلى الفريق</p>
     </header>
 
-    <div class="tabs">
-      <button class="tab-btn active" id="tabRegister" onclick="switchTab('register')">استمارة الانضمام</button>
-      <button class="tab-btn" id="tabLeader" onclick="switchTab('leader')">لوحة القائد</button>
-    </div>
-
-    <!-- قسم التسجيل -->
-    <div id="registerSection" class="card">
+    <div class="card">
+      <div class="section-title">استمارة طلب الانضمام</div>
       <form id="fapForm">
         <div class="form-grid">
           <div class="form-group">
             <label>الاسم الكامل (يفضل بالإنكليزية للبطاقة) *</label>
-            <input type="text" id="fullName" placeholder="مثال: Haydar Hassan Awaad" required />
+            <input type="text" id="fullName" placeholder="مثال: Haydar Hassan Awaad" required oninput="updatePreview()" />
           </div>
 
           <div class="form-group">
             <label>العمر *</label>
-            <input type="number" id="age" min="15" max="60" placeholder="مثال: 21" required />
+            <input type="number" id="age" min="14" max="65" placeholder="مثال: 21" required />
           </div>
 
           <div class="form-group">
             <label>المحافظة *</label>
-            <input type="text" id="governorate" placeholder="مثال: بغداد" required />
+            <select id="governorate" required onchange="updatePreview()">
+              <option value="">اختر المحافظة...</option>
+              <option value="بغداد">بغداد</option>
+              <option value="البصرة">البصرة</option>
+              <option value="نينوى">نينوى</option>
+              <option value="أربيل">أربيل</option>
+              <option value="النجف">النجف</option>
+              <option value="كربلاء">كربلاء</option>
+              <option value="الأنبار">الأنبار</option>
+              <option value="ديالى">ديالى</option>
+              <option value="ذي قار">ذي قار</option>
+              <option value="كركوك">كركوك</option>
+              <option value="صلاح الدين">صلاح الدين</option>
+              <option value="بابل">بابل</option>
+              <option value="واسط">واسط</option>
+              <option value="ميسان">ميسان</option>
+              <option value="الديوانية">الديوانية</option>
+              <option value="المثنى">المثنى</option>
+              <option value="السليمانية">السليمانية</option>
+              <option value="دهوك">دهوك</option>
+            </select>
           </div>
 
           <div class="form-group">
-            <label>الجامعة / الكلية أو المدرسة *</label>
-            <input type="text" id="university" placeholder="مثال: الجامعة التقنية الوسطى" required />
+            <label>الجامعة / الكلية *</label>
+            <select id="universitySelect" required onchange="toggleCustomUni()">
+              <option value="">اختر الجامعة...</option>
+              <option value="الجامعة التقنية الوسطى">الجامعة التقنية الوسطى</option>
+              <option value="جامعة بغداد">جامعة بغداد</option>
+              <option value="الجامعة المستنصرية">الجامعة المستنصرية</option>
+              <option value="جامعة التكنولوجيا">جامعة التكنولوجيا</option>
+              <option value="جامعة النهرين">جامعة النهرين</option>
+              <option value="جامعة البصرة">جامعة البصرة</option>
+              <option value="الجامعة التقنية الجنوبية">الجامعة التقنية الجنوبية</option>
+              <option value="جامعة الموصل">جامعة الموصل</option>
+              <option value="الجامعة التقنية الشمالية">الجامعة التقنية الشمالية</option>
+              <option value="جامعة الكوفة">جامعة الكوفة</option>
+              <option value="جامعة كربلاء">جامعة كربلاء</option>
+              <option value="جامعة الأنبار">جامعة الأنبار</option>
+              <option value="جامعة بابل">جامعة بابل</option>
+              <option value="جامعة ذي قار">جامعة ذي قار</option>
+              <option value="جامعة تكريت">جامعة تكريت</option>
+              <option value="جامعة ديالى">جامعة ديالى</option>
+              <option value="جامعة واسط">جامعة واسط</option>
+              <option value="جامعة ميسان">جامعة ميسان</option>
+              <option value="جامعة القادسية">جامعة القادسية</option>
+              <option value="جامعة المثنى">جامعة المثنى</option>
+              <option value="جامعة كركوك">جامعة كركوك</option>
+              <option value="أخرى / مدرسة">أخرى / مدرسة</option>
+            </select>
+          </div>
+
+          <div class="form-group full" id="customUniGroup" style="display: none;">
+            <label>اكتب اسم الجامعة أو المعهد أو المدرسة *</label>
+            <input type="text" id="customUniversity" placeholder="اكتب الجهة التعليمية هنا..." oninput="updatePreview()" />
           </div>
 
           <div class="form-group full">
-            <label>البريد الإلكتروني (لإرسال بطاقة العضوية PDF) *</label>
+            <label>البريد الإلكتروني (لإرسال بطاقة العضوية PDF عند الموافقة) *</label>
             <input type="email" id="email" placeholder="example@gmail.com" required />
           </div>
 
@@ -315,8 +341,23 @@
           </div>
 
           <div class="form-group full">
-            <label>الصورة الشخصية (لإضافتها لملفك) *</label>
-            <input type="file" id="photoInput" accept="image/*" required />
+            <label>الصورة الشخصية *</label>
+            <input type="file" id="photoInput" accept="image/*" required onchange="previewPhoto(this)" />
+          </div>
+
+          <!-- معاينة شكل البطاقة للمتقدم -->
+          <div class="form-group full">
+            <label>معاينة نموذج بطاقة العضوية</label>
+            <div class="preview-box">
+              <div class="preview-info">
+                <div class="preview-org">FAREED AEROSPACE PIONEERS (FAP)</div>
+                <div class="preview-card-title">OFFICIAL MEMBERSHIP CARD</div>
+                <div class="preview-line"><span>الاسم / Name:</span> <strong id="prevName">---</strong></div>
+                <div class="preview-line"><span>الجهة / Affiliation:</span> <strong id="prevUni">---</strong></div>
+                <div class="preview-line"><span>المحافظة / Governorate:</span> <strong id="prevGov">---</strong></div>
+              </div>
+              <div class="preview-avatar" id="prevAvatarBox">الصورة الشخصية</div>
+            </div>
           </div>
         </div>
 
@@ -324,35 +365,55 @@
         <div id="formAlert" class="alert"></div>
       </form>
     </div>
-
-    <!-- قسم لوحة القائد -->
-    <div id="leaderSection" class="card hidden">
-      <div id="adminLoginBox" class="admin-login">
-        <h3 style="color: var(--gold); margin-bottom: 12px;">دخول قائد الفريق</h3>
-        <input type="password" id="adminPassInput" placeholder="أدخل رمز المرور (FAP2026)" style="width: 100%; margin-bottom: 12px;" />
-        <button class="submit-btn" style="margin-top: 0;" onclick="unlockAdmin()">دخول</button>
-        <p id="loginError" style="color: #fca5a5; margin-top: 10px; font-size: 0.9rem;"></p>
-      </div>
-
-      <div id="adminPanel" class="hidden">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-          <h3 style="color: var(--gold); margin-bottom: 16px;">طلبات الانضمام الواردة</h3>
-          <button class="btn-refresh" onclick="loadApplications()">تحديث القائمة ↻</button>
-        </div>
-        <div id="appsContainer">جاري تحميل الطلبات...</div>
-      </div>
-    </div>
   </div>
 
   <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyo16RAjV3Tlx9EA-Jq8cS3P1-EnZeQlNSxOmmVtoEZIhXQQU_X4HUA6woybRcDFIhQ/exec';
-    const ADMIN_PASSWORD = 'FAP2026';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxsEVqHQszSyVUqnO5VcRsmyC2bGYL2RYP0vWiH2aCSeQ-B0-LYDS1RTB1MoVQFag3t/exec';
 
-    function switchTab(tab) {
-      document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
-      document.getElementById('tabLeader').classList.toggle('active', tab === 'leader');
-      document.getElementById('registerSection').classList.toggle('hidden', tab !== 'register');
-      document.getElementById('leaderSection').classList.toggle('hidden', tab !== 'leader');
+    function getSelectedUniversity() {
+      const sel = document.getElementById('universitySelect').value;
+      if (sel === 'أخرى / مدرسة') {
+        return document.getElementById('customUniversity').value.trim();
+      }
+      return sel;
+    }
+
+    function toggleCustomUni() {
+      const sel = document.getElementById('universitySelect').value;
+      const box = document.getElementById('customUniGroup');
+      const inp = document.getElementById('customUniversity');
+      if (sel === 'أخرى / مدرسة') {
+        box.style.display = 'flex';
+        inp.required = true;
+      } else {
+        box.style.display = 'none';
+        inp.required = false;
+        inp.value = '';
+      }
+      updatePreview();
+    }
+
+    function updatePreview() {
+      const nameVal = document.getElementById('fullName').value.trim();
+      const govVal = document.getElementById('governorate').value.trim();
+      const uniVal = getSelectedUniversity();
+
+      document.getElementById('prevName').textContent = nameVal || '---';
+      document.getElementById('prevGov').textContent = govVal || '---';
+      document.getElementById('prevUni').textContent = uniVal || '---';
+    }
+
+    function previewPhoto(input) {
+      const box = document.getElementById('prevAvatarBox');
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          box.innerHTML = `<img src="${e.target.result}" alt="Preview" />`;
+        };
+        reader.readAsDataURL(input.files[0]);
+      } else {
+        box.innerHTML = 'الصورة الشخصية';
+      }
     }
 
     function fileToBase64(file) {
@@ -372,7 +433,8 @@
       alertBox.textContent = '';
 
       const photoFile = document.getElementById('photoInput').files[0];
-      if (!photoFile) return;
+      const universityFinal = getSelectedUniversity();
+      if (!photoFile || !universityFinal) return;
 
       btn.disabled = true;
       btn.textContent = 'جاري رفع البيانات والصورة... يرجى الانتظار';
@@ -384,7 +446,7 @@
           fullName: document.getElementById('fullName').value.trim(),
           age: document.getElementById('age').value.trim(),
           governorate: document.getElementById('governorate').value.trim(),
-          university: document.getElementById('university').value.trim(),
+          university: universityFinal,
           email: document.getElementById('email').value.trim(),
           skills: document.getElementById('skills').value.trim(),
           competitions: document.getElementById('competitions').value.trim(),
@@ -399,8 +461,11 @@
 
         if (result.success) {
           alertBox.className = 'alert success';
-          alertBox.textContent = 'تم إرسال طلبك بنجاح! رقم طلبك: ' + result.memberId + '. ستصلك بطاقة العضوية على بريدك الإلكتروني فور الموافقة.';
+          alertBox.textContent = 'تم إرسال طلبك بنجاح! رقم طلبك: ' + result.memberId + '. ستصلك بطاقة العضوية على بريدك الإلكتروني فور موافقة القائد.';
           document.getElementById('fapForm').reset();
+          document.getElementById('customUniGroup').style.display = 'none';
+          document.getElementById('prevAvatarBox').innerHTML = 'الصورة الشخصية';
+          updatePreview();
         } else {
           throw new Error(result.error || 'حدث خطأ أثناء الإرسال');
         }
@@ -412,87 +477,6 @@
         btn.textContent = 'إرسال طلب الانضمام';
       }
     });
-
-    function unlockAdmin() {
-      const pass = document.getElementById('adminPassInput').value;
-      if (pass === ADMIN_PASSWORD) {
-        document.getElementById('adminLoginBox').classList.add('hidden');
-        document.getElementById('adminPanel').classList.remove('hidden');
-        loadApplications();
-      } else {
-        document.getElementById('loginError').textContent = 'رمز المرور غير صحيح!';
-      }
-    }
-
-    async function loadApplications() {
-      const container = document.getElementById('appsContainer');
-      container.innerHTML = 'جاري جلب الطلبات من قاعدة البيانات...';
-
-      try {
-        const res = await fetch(SCRIPT_URL, {
-          method: 'POST',
-          body: JSON.stringify({ action: 'get_applications' })
-        });
-        const result = await res.json();
-
-        if (!result.success) throw new Error(result.error || 'فشل الجلب');
-
-        if (!result.applications || result.applications.length === 0) {
-          container.innerHTML = '<p style="color: var(--text-muted);">لا توجد طلبات مسجلة حالياً.</p>';
-          return;
-        }
-
-        container.innerHTML = result.applications.reverse().map(app => `
-          <div class="app-item">
-            <div class="app-header">
-              <div>
-                <strong style="font-size: 1.05rem; color: var(--gold);">${app.fullName}</strong>
-                <span style="font-size: 0.85rem; color: var(--text-muted);"> (${app.memberId})</span>
-              </div>
-              <span class="status-pill status-${app.status}">${app.status}</span>
-            </div>
-            <div class="app-details">
-              <div><strong>العمر:</strong> ${app.age} | <strong>المحافظة:</strong> ${app.governorate}</div>
-              <div><strong>الجامعة:</strong> ${app.university}</div>
-              <div><strong>البريد:</strong> ${app.email}</div>
-              <div><strong>المهارات:</strong> ${app.skills}</div>
-              <div><strong>المسابقات:</strong> ${app.competitions || 'لا يوجد'}</div>
-              ${app.photoUrl ? `<div><a href="${app.photoUrl}" target="_blank" style="color: var(--gold);">عرض الصورة الشخصية ↗</a></div>` : ''}
-            </div>
-            <div class="app-actions">
-              <button class="btn-approve" onclick="updateMember(${app.rowIndex}, 'approve_member', this)">موافقة وإرسال البطاقة ✓</button>
-              <button class="btn-reject" onclick="updateMember(${app.rowIndex}, 'reject_member', this)">رفض ✕</button>
-            </div>
-          </div>
-        `).join('');
-      } catch (err) {
-        container.innerHTML = `<p style="color: #fca5a5;">خطأ في تحميل الطلبات: ${err.message}</p>`;
-      }
-    }
-
-    async function updateMember(rowIndex, action, btn) {
-      const originalText = btn.textContent;
-      btn.disabled = true;
-      btn.textContent = 'جاري التنفيذ...';
-
-      try {
-        const res = await fetch(SCRIPT_URL, {
-          method: 'POST',
-          body: JSON.stringify({ action: action, rowIndex: rowIndex })
-        });
-        const result = await res.json();
-        if (result.success) {
-          alert(action === 'approve_member' ? 'تمت الموافقة وإرسال بطاقة PDF للعضو بنجاح!' : 'تم رفض الطلب.');
-          loadApplications();
-        } else {
-          throw new Error(result.error || 'فشل التحديث');
-        }
-      } catch (err) {
-        alert('حدث خطأ: ' + err.message);
-        btn.disabled = false;
-        btn.textContent = originalText;
-      }
-    }
   </script>
 </body>
 </html>
