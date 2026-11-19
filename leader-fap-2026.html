@@ -3,178 +3,165 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>لوحة قائد فريق FAP</title>
-
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <title>لوحة القائد — FAP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
   <style>
     :root {
+      --bg-dark: #071936;
+      --bg-mid: #0e356e;
+      --bg-card: #0b244c;
+      --gold: #f5d061;
+      --gold-dark: #d4af37;
       --fap-navy: #0b2c5d;
       --fap-blue: #154c9e;
-      --fap-blue-deep: #071936;
-      --fap-blue-mid: #0e356e;
-      --fap-gold: #d4af37;
-      --fap-gold-light: #f5dc86;
-      --fap-white: #ffffff;
-      --fap-text: #111827;
+      --text-main: #f8fafc;
+      --text-muted: #bfdbfe;
+      --border: rgba(212, 175, 55, 0.32);
+      --success: #10b981;
+      --danger: #ef4444;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      font-family: 'Cairo', sans-serif;
     }
 
     body {
-      font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
-      min-height: 100vh;
       background:
-        radial-gradient(circle at top right, rgba(21, 76, 158, 0.55), transparent 45%),
-        radial-gradient(circle at bottom left, rgba(212, 175, 55, 0.14), transparent 40%),
-        linear-gradient(160deg, var(--fap-blue-deep) 0%, var(--fap-blue-mid) 52%, #0a244d 100%);
-      color: var(--fap-white);
-      padding: 24px;
+        radial-gradient(circle at top right, rgba(21, 76, 158, 0.65), transparent 48%),
+        radial-gradient(circle at bottom left, rgba(212, 175, 55, 0.14), transparent 42%),
+        linear-gradient(160deg, var(--bg-dark) 0%, var(--bg-mid) 55%, #06152e 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 20px;
     }
 
-    .dashboard-container {
-      max-width: 960px;
+    .container {
+      max-width: 860px;
       margin: 0 auto;
     }
 
-    .dashboard-header {
-      background: linear-gradient(90deg, rgba(11, 44, 93, 0.95) 0%, rgba(21, 76, 158, 0.95) 100%);
-      color: var(--fap-white);
-      padding: 20px 24px;
-      border-radius: 16px;
-      border: 1px solid rgba(212, 175, 55, 0.45);
-      border-bottom: 4px solid var(--fap-gold);
-      box-shadow: 0 10px 24px rgba(3, 12, 28, 0.35);
+    header {
+      text-align: center;
+      padding: 24px 16px;
+      border-bottom: 2px solid var(--gold-dark);
       margin-bottom: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
+      background: linear-gradient(90deg, rgba(11, 44, 93, 0.92), rgba(21, 76, 158, 0.92));
+      border-radius: 16px;
     }
 
-    .dashboard-header h1 {
-      font-size: 22px;
-      font-weight: 800;
+    header h1 {
+      color: var(--gold);
+      font-size: 1.7rem;
     }
 
-    .dashboard-header p {
-      font-size: 14px;
-      color: #dbeafe;
-      opacity: 0.95;
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 12px 28px rgba(3, 12, 28, 0.35);
     }
 
-    .requests-list {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
+    .hidden {
+      display: none !important;
     }
 
-    .request-card {
-      background: linear-gradient(135deg, rgba(14, 53, 110, 0.92) 0%, rgba(9, 34, 74, 0.96) 100%);
-      color: var(--fap-white);
-      border-radius: 14px;
-      padding: 18px 20px;
-      border: 1px solid rgba(147, 197, 253, 0.28);
-      border-right: 5px solid var(--fap-gold);
-      box-shadow: 0 8px 20px rgba(3, 12, 28, 0.3);
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
+    .login-box {
+      max-width: 380px;
+      margin: 16px auto;
+      text-align: center;
     }
 
-    .request-info h2 {
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--fap-white);
-      margin-bottom: 6px;
-    }
-
-    .request-meta {
-      font-size: 14px;
-      color: #dbeafe;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 14px;
-    }
-
-    .status-badge {
-      display: inline-block;
-      padding: 3px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      background: rgba(212, 175, 55, 0.2);
-      color: var(--fap-gold-light);
-      border: 1px solid rgba(212, 175, 55, 0.55);
-      margin-right: 8px;
-    }
-
-    .status-badge.approved {
-      background: #dcfce7;
-      color: #166534;
-      border-color: #86efac;
-    }
-
-    .status-badge.rejected {
-      background: #fee2e2;
-      color: #991b1b;
-      border-color: #fca5a5;
-    }
-
-    .request-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .btn {
-      border: none;
+    input {
+      width: 100%;
+      background: #071936;
+      border: 1px solid rgba(147, 197, 253, 0.35);
+      color: var(--text-main);
+      padding: 11px 14px;
       border-radius: 10px;
-      padding: 10px 16px;
-      font-family: inherit;
-      font-size: 14px;
-      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+    }
+
+    .btn-gold {
+      width: 100%;
+      background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+      color: #060d1a;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-weight: 800;
       cursor: pointer;
-      transition: transform 0.15s ease, opacity 0.15s ease;
-    }
-
-    .btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    .btn:hover:not(:disabled) {
-      transform: translateY(-1px);
-      opacity: 0.96;
-    }
-
-    .btn-approve {
-      background: linear-gradient(90deg, #1d5ec2, #2563eb);
-      color: var(--fap-white);
-      border: 1px solid rgba(245, 220, 134, 0.5);
-      border-bottom: 2px solid var(--fap-gold);
-    }
-
-    .btn-reject {
-      background: #dc2626;
-      color: var(--fap-white);
     }
 
     .btn-refresh {
-      background: #0c2b5c;
-      color: var(--fap-gold-light);
-      border: 2px solid var(--fap-gold);
+      width: auto;
+      margin-bottom: 16px;
     }
 
-    /* حاوية تصدير البطاقة */
+    .app-item {
+      background: linear-gradient(135deg, rgba(14, 53, 110, 0.92), rgba(7, 25, 54, 0.96));
+      border: 1px solid var(--border);
+      border-right: 4px solid var(--gold);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+    }
+
+    .status-pill {
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .status-Pending { background: rgba(245, 208, 97, 0.2); color: var(--gold); }
+    .status-Approved { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+    .status-Rejected { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+
+    .app-details {
+      font-size: 0.92rem;
+      color: #e2e8f0;
+      line-height: 1.75;
+    }
+
+    .app-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-approve, .btn-reject {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-approve { background: var(--success); color: #fff; }
+    .btn-reject { background: var(--danger); color: #fff; }
+
+    /* حاوية تصدير بطاقة العضوية PDF */
     #fapPdfExportWrapper {
       position: fixed;
       left: -10000px;
@@ -189,8 +176,8 @@
     .fap-card {
       width: 860px;
       height: 480px;
-      background: var(--fap-white);
-      border: 3px solid var(--fap-gold);
+      background: #ffffff;
+      border: 3px solid var(--gold-dark);
       border-radius: 20px;
       overflow: hidden;
       display: flex;
@@ -200,12 +187,12 @@
 
     .fap-card-header {
       background: linear-gradient(90deg, var(--fap-navy) 0%, var(--fap-blue) 100%);
-      color: var(--fap-white);
+      color: #ffffff;
       padding: 12px 28px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 4px solid var(--fap-gold);
+      border-bottom: 4px solid var(--gold-dark);
     }
 
     .fap-brand-group {
@@ -219,20 +206,20 @@
       height: 60px;
       flex-shrink: 0;
       border-radius: 50%;
-      box-shadow: 0 0 0 2px var(--fap-gold);
+      box-shadow: 0 0 0 2px var(--gold-dark);
     }
 
     .fap-short-name {
       font-size: 32px;
       font-weight: 800;
       letter-spacing: 2px;
-      color: var(--fap-white);
+      color: #ffffff;
     }
 
     .fap-gold-tag {
       background: rgba(212, 175, 55, 0.22);
-      color: var(--fap-gold-light);
-      border: 1px solid var(--fap-gold);
+      color: var(--gold);
+      border: 1px solid var(--gold-dark);
       padding: 6px 18px;
       border-radius: 999px;
       font-size: 15px;
@@ -254,7 +241,7 @@
       height: 250px;
       border-radius: 16px;
       border: 3px solid var(--fap-blue);
-      outline: 3px solid var(--fap-gold);
+      outline: 3px solid var(--gold-dark);
       outline-offset: 3px;
       overflow: hidden;
       background: #eef3fa;
@@ -297,27 +284,39 @@
     }
 
     .fap-field-value {
-      color: var(--fap-text);
+      color: #111827;
       font-weight: 700;
     }
 
     .fap-card-footer {
       height: 12px;
-      background: linear-gradient(90deg, var(--fap-gold) 0%, var(--fap-gold-light) 50%, var(--fap-gold) 100%);
+      background: linear-gradient(90deg, var(--gold-dark) 0%, var(--gold) 50%, var(--gold-dark) 100%);
     }
   </style>
 </head>
 <body>
-  <div class="dashboard-container">
-    <header class="dashboard-header">
-      <div>
-        <h1>لوحة قائد فريق FAP</h1>
-        <p>إدارة طلبات الانضمام وتوليد وإرسال بطاقات العضوية PDF</p>
-      </div>
-      <button id="refreshBtn" class="btn btn-refresh" type="button">تحديث القائمة</button>
+  <div class="container">
+    <header>
+      <h1>لوحة قائد فريق FAP</h1>
+      <p style="color: var(--text-muted);">إدارة طلبات الانضمام وإرسال بطاقات العضوية PDF</p>
     </header>
 
-    <main id="requestsContainer" class="requests-list"></main>
+    <div class="card">
+      <div id="loginBox" class="login-box">
+        <h3 style="color: var(--gold); margin-bottom: 12px;">دخول القائد</h3>
+        <input type="password" id="passInput" placeholder="أدخل رمز المرور" />
+        <button class="btn-gold" onclick="login()">دخول</button>
+        <p id="errMsg" style="color: #fca5a5; margin-top: 10px; font-size: 0.9rem;"></p>
+      </div>
+
+      <div id="panelBox" class="hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+          <h3 style="color: var(--gold); margin-bottom: 16px;">الطلبات الواردة</h3>
+          <button class="btn-gold btn-refresh" onclick="loadApps()">تحديث القائمة ↻</button>
+        </div>
+        <div id="appsList">جاري التحميل...</div>
+      </div>
+    </div>
   </div>
 
   <!-- قالب بطاقة العضوية مع شعار FAP المثبت كجزء من البطاقة -->
@@ -391,7 +390,19 @@
   </div>
 
   <script>
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxU6HteX9Ip4Fs7iSixNPCq93HNmdB1unlb0fb0WOiNh4JJ6ZZuNoqMfpCBOhF--evr/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxsEVqHQszSyVUqnO5VcRsmyC2bGYL2RYP0vWiH2aCSeQ-B0-LYDS1RTB1MoVQFag3t/exec';
+    const ADMIN_PASS = 'FAP2026';
+    let currentApplications = [];
+
+    function login() {
+      if (document.getElementById('passInput').value === ADMIN_PASS) {
+        document.getElementById('loginBox').classList.add('hidden');
+        document.getElementById('panelBox').classList.remove('hidden');
+        loadApps();
+      } else {
+        document.getElementById('errMsg').textContent = 'رمز المرور غير صحيح';
+      }
+    }
 
     function shortenUniversity(uni) {
       if (!uni) return '-';
@@ -404,8 +415,6 @@
       };
       return map[clean] || clean;
     }
-
-    let memberRequests = [];
 
     function normalizeImageUrl(url) {
       if (!url || typeof url !== 'string') return '';
@@ -472,18 +481,18 @@
       });
     }
 
-    async function generateFapMembershipPdf(member, autoDownload = true) {
+    async function generateFapMembershipPdf(app, autoDownload = true) {
       if (!window.html2canvas || !window.jspdf || !window.jspdf.jsPDF) {
         throw new Error('لم يتم تحميل مكتبتي html2canvas أو jsPDF.');
       }
 
-      document.getElementById('fapMemberName').textContent = (member.name || '-').trim();
-      document.getElementById('fapMemberUni').textContent = shortenUniversity(member.universityShort || member.university || '-');
-      document.getElementById('fapMemberAge').textContent = (member.age || '-').toString().trim();
-      document.getElementById('fapMemberGov').textContent = (member.governorate || '-').trim();
+      document.getElementById('fapMemberName').textContent = (app.fullName || '-').trim();
+      document.getElementById('fapMemberUni').textContent = shortenUniversity(app.university || '-');
+      document.getElementById('fapMemberAge').textContent = (app.age || '-').toString().trim();
+      document.getElementById('fapMemberGov').textContent = (app.governorate || '-').trim();
 
       const photoEl = document.getElementById('fapMemberImg');
-      await loadPhotoSafely(photoEl, member.photoUrl || '');
+      await loadPhotoSafely(photoEl, app.photoUrl || '');
 
       if (document.fonts && document.fonts.ready) {
         await document.fonts.ready;
@@ -524,151 +533,108 @@
 
       pdf.addImage(imgData, 'PNG', 0, 0, 860, 480);
 
-      const safeId = (member.id || 'Member').toString().trim().replace(/[^\w\u0600-\u06FF-]+/g, '_');
+      const safeId = (app.memberId || app.fullName || 'Member').toString().trim().replace(/[^\w\u0600-\u06FF-]+/g, '_');
       const fileName = `FAP_Membership_Card_${safeId}.pdf`;
 
       if (autoDownload) {
         pdf.save(fileName);
       }
 
-      return {
-        fileName,
-        blob: pdf.output('blob')
-      };
+      const dataUrl = pdf.output('datauristring');
+      const pdfBase64 = dataUrl.includes(',') ? dataUrl.split(',')[1] : '';
+
+      return { fileName, pdfBase64 };
     }
 
-    async function sendCardViaAppsScript(member, fileName, blob) {
-      if (!APPS_SCRIPT_URL || !member.email) return;
-
-      const base64Pdf = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(String(reader.result).split(',')[1] || '');
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-      });
-
-      await fetch(APPS_SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'approveAndSendCard',
-          memberId: member.id,
-          name: member.name,
-          email: member.email,
-          fileName,
-          pdfBase64: base64Pdf
-        })
-      });
-    }
-
-    async function approveAndGenerateCard(index, buttonEl) {
-      const item = memberRequests[index];
-      if (!item) return;
-
-      if (buttonEl) buttonEl.disabled = true;
+    async function loadApps() {
+      const list = document.getElementById('appsList');
+      list.innerHTML = 'جاري جلب الطلبات...';
 
       try {
-        item.status = 'Approved';
-        renderRequests();
-
-        const { fileName, blob } = await generateFapMembershipPdf(item, true);
-        await sendCardViaAppsScript(item, fileName, blob);
-      } catch (err) {
-        console.error(err);
-        alert('حدث خطأ أثناء تجهيز البطاقة: ' + err.message);
-      } finally {
-        if (buttonEl) buttonEl.disabled = false;
-      }
-    }
-
-    async function loadRequestsFromSource() {
-      if (!APPS_SCRIPT_URL) {
-        renderRequests();
-        return;
-      }
-
-      try {
-        const res = await fetch(APPS_SCRIPT_URL);
+        const res = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'get_applications' })
+        });
         const data = await res.json();
-        const rows = Array.isArray(data) ? data : (data.requests || data.data || []);
+        if (!data.success) throw new Error(data.error || 'فشل الجلب');
 
-        memberRequests = rows.map((row, idx) => ({
-          id: row.MemberID || row['Member ID'] || row.id || `FAP-2026-${idx + 1}`,
-          name: row.FullName || row['Full Name'] || row.name || '-',
-          universityShort: shortenUniversity(row.University || row.university || '-'),
-          age: row.Age || row.age || '-',
-          governorate: row.Governorate || row.governorate || '-',
-          email: row.Email || row.email || '',
-          photoUrl: row.PhotoURL || row['Photo URL'] || row.photoUrl || '',
-          status: row.Status || row.status || 'Pending'
-        }));
-      } catch (err) {
-        console.error('تعذر جلب الطلبات:', err);
-      }
+        if (!data.applications || data.applications.length === 0) {
+          currentApplications = [];
+          list.innerHTML = '<p style="color: var(--text-muted);">لا توجد طلبات حالياً.</p>';
+          return;
+        }
 
-      renderRequests();
-    }
+        currentApplications = data.applications.slice().reverse();
 
-    function renderRequests() {
-      const container = document.getElementById('requestsContainer');
-      container.innerHTML = '';
-
-      if (!memberRequests.length) {
-        container.innerHTML = '<div class="request-card">لا توجد طلبات حالياً.</div>';
-        return;
-      }
-
-      memberRequests.forEach((req, index) => {
-        const card = document.createElement('div');
-        card.className = 'request-card';
-
-        const statusClass =
-          req.status === 'Approved' ? 'approved' : req.status === 'Rejected' ? 'rejected' : '';
-
-        card.innerHTML = `
-          <div class="request-info">
-            <h2>
-              ${req.name} (${req.id})
-              <span class="status-badge ${statusClass}">${req.status || 'Pending'}</span>
-            </h2>
-            <div class="request-meta">
-              <span>العمر: ${req.age}</span>
-              <span>المحافظة: ${req.governorate}</span>
-              <span>الجامعة: ${req.universityShort}</span>
+        list.innerHTML = currentApplications.map((app, idx) => `
+          <div class="app-item">
+            <div class="app-header">
+              <div>
+                <strong style="color: var(--gold);">${app.fullName}</strong>
+                <span style="color: var(--text-muted); font-size: 0.85rem;"> (${app.memberId})</span>
+              </div>
+              <span class="status-pill status-${app.status}">${app.status}</span>
+            </div>
+            <div class="app-details">
+              <div><strong>العمر:</strong> ${app.age} | <strong>المحافظة:</strong> ${app.governorate}</div>
+              <div><strong>الجامعة/الجهة:</strong> ${app.university}</div>
+              <div><strong>البريد:</strong> ${app.email}</div>
+              <div><strong>المهارات:</strong> ${app.skills}</div>
+              <div><strong>المسابقات:</strong> ${app.competitions || 'لا يوجد'}</div>
+              ${app.photoUrl ? `<div><a href="${app.photoUrl}" target="_blank" style="color: var(--gold);">عرض الصورة الشخصية ↗</a></div>` : ''}
+            </div>
+            <div class="app-actions">
+              <button class="btn-approve" onclick="decide(${idx}, 'approve_member', this)">موافقة وإرسال البطاقة ✓</button>
+              <button class="btn-reject" onclick="decide(${idx}, 'reject_member', this)">رفض ✕</button>
             </div>
           </div>
-          <div class="request-actions">
-            <button class="btn btn-approve" type="button" data-index="${index}">موافقة وإرسال البطاقة</button>
-            <button class="btn btn-reject" type="button" data-index="${index}">رفض</button>
-          </div>
-        `;
-
-        container.appendChild(card);
-      });
-
-      container.querySelectorAll('.btn-approve').forEach((btn) => {
-        btn.addEventListener('click', (e) => {
-          const idx = Number(e.currentTarget.dataset.index);
-          approveAndGenerateCard(idx, e.currentTarget);
-        });
-      });
-
-      container.querySelectorAll('.btn-reject').forEach((btn) => {
-        btn.addEventListener('click', (e) => {
-          const idx = Number(e.currentTarget.dataset.index);
-          if (!memberRequests[idx]) return;
-          memberRequests[idx].status = 'Rejected';
-          renderRequests();
-        });
-      });
+        `).join('');
+      } catch (err) {
+        list.innerHTML = `<p style="color: #fca5a5;">خطأ: ${err.message}</p>`;
+      }
     }
 
-    document.getElementById('refreshBtn').addEventListener('click', () => {
-      loadRequestsFromSource();
-    });
+    async function decide(index, action, btn) {
+      const app = currentApplications[index];
+      if (!app) return;
 
-    loadRequestsFromSource();
+      const old = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'جاري التنفيذ...';
+      try {
+        let cardPayload = {};
+        if (action === 'approve_member') {
+          const { fileName, pdfBase64 } = await generateFapMembershipPdf(app, true);
+          cardPayload = {
+            fileName,
+            pdfBase64,
+            memberId: app.memberId,
+            fullName: app.fullName,
+            email: app.email
+          };
+        }
+
+        const res = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({
+            action,
+            rowIndex: app.rowIndex,
+            ...cardPayload
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert(action === 'approve_member' ? 'تمت الموافقة وإرسال بطاقة PDF بنجاح!' : 'تم رفض الطلب.');
+          loadApps();
+        } else {
+          throw new Error(data.error || 'فشل التحديث');
+        }
+      } catch (err) {
+        alert('خطأ: ' + err.message);
+        btn.disabled = false;
+        btn.textContent = old;
+      }
+    }
   </script>
 </body>
 </html>
